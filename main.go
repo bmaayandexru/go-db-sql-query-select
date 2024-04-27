@@ -12,6 +12,7 @@ type Sale struct {
 	Date    string
 }
 
+// инменение для коммита
 // String реализует метод интерфейса fmt.Stringer для Sale, возвращает строковое представление объекта Sale.
 // Теперь, если передать объект Sale в fmt.Println(), то выведется строка, которую вернёт эта функция.
 func (s Sale) String() string {
