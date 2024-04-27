@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 
 	_ "modernc.org/sqlite"
@@ -12,9 +13,6 @@ type Sale struct {
 	Date    string
 }
 
-// изменение для коммита
-// изменение для коммита 2
-// изменение для коммита
 // String реализует метод интерфейса fmt.Stringer для Sale, возвращает строковое представление объекта Sale.
 // Теперь, если передать объект Sale в fmt.Println(), то выведется строка, которую вернёт эта функция.
 func (s Sale) String() string {
@@ -25,7 +23,38 @@ func selectSales(client int) ([]Sale, error) {
 	var sales []Sale
 
 	// напишите код здесь
+	db, err := sql.Open("sqlite", "demo.db")
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	defer db.Close()
 
+	rows, err := db.Query("SELECT product, volume, date FROM sales WHERE client = :client", sql.Named("client", client))
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	for rows.Next() {
+		var sale Sale
+
+		err := rows.Scan(&sale.Product, &sale.Volume, &sale.Date)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		// fmt.Println(sale)
+		// добавить в sales
+		sales = append(sales, sale)
+	}
+
+	// fmt.Println(sales)
+
+	if err := rows.Err(); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
 	return sales, nil
 }
 
